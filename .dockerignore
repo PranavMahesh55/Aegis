@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+.pytest_cache
+.ruff_cache
+**/__pycache__
+**/*.py[cod]
+apps/web/node_modules
+apps/web/dist
+var
+.env
+.DS_Store
+design/reference
+docs/*.png
+

@@ -1,0 +1,23 @@
+name: aegis-context-events
+enabled: true
+source:
+  type: kafka
+  config:
+    connection:
+      bootstrap: ${KAFKA_BOOTSTRAP_SERVER:-broker:29092}
+      schema_registry_url: ${SCHEMA_REGISTRY_URL:-http://datahub-gms:8080/schema-registry/api/}
+filters:
+  - type: event_type
+    config:
+      filter:
+        MetadataChangeLogEvent_v1: {}
+        EntityChangeEvent_v1: {}
+action:
+  type: aegis_actions.forward_change.ForwardAegisChangeAction
+  config:
+    endpoint: ${AEGIS_EVENT_ENDPOINT:-http://aegis:8000/api/integrations/datahub/events}
+    shared_secret: ${AEGIS_DATAHUB_ACTIONS_SHARED_SECRET}
+    timeout_seconds: 5
+options:
+  retry_count: 5
+  failure_mode: THROW

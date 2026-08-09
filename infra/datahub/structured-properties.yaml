@@ -1,0 +1,34 @@
+- id: io.aegis.approvalStatus
+  qualified_name: io.aegis.approvalStatus
+  type: string
+  cardinality: SINGLE
+  display_name: Aegis approval status
+  entity_types:
+    - dataset
+  description: Approval state used by Aegis deterministic safety controls.
+  allowed_values:
+    - value: approved
+      description: Approved for production agent context.
+    - value: not_approved
+      description: Not approved for production agent context.
+    - value: revoked
+      description: Previously approved and explicitly revoked.
+
+- id: io.aegis.contentHash
+  qualified_name: io.aegis.contentHash
+  type: string
+  cardinality: SINGLE
+  display_name: Aegis content hash
+  entity_types:
+    - dataset
+  description: Content hash pinned by Aegis attestations.
+
+- id: io.aegis.demoSeedVersion
+  qualified_name: io.aegis.demoSeedVersion
+  type: string
+  cardinality: SINGLE
+  display_name: Aegis demo seed version
+  entity_types:
+    - dataset
+  description: Reproducible Aegis demonstration manifest version.
+

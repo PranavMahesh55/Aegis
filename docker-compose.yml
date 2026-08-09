@@ -1,0 +1,104 @@
+services:
+  aegis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      AEGIS_DATABASE_PATH: /app/var/aegis.db
+      AEGIS_CONTEXT_DATABASE_PATH: /app/var/aegis-context.db
+      AEGIS_DATA_MODE: ${AEGIS_DATA_MODE:-seeded}
+      AEGIS_PRIME_BLOCKED: ${AEGIS_PRIME_BLOCKED:-true}
+      DATAHUB_GMS_URL: ${DATAHUB_GMS_URL:-http://host.docker.internal:8080}
+      DATAHUB_GMS_TOKEN: ${DATAHUB_GMS_TOKEN:-}
+      DATAHUB_GRAPHQL_URL: ${DATAHUB_GRAPHQL_URL:-http://host.docker.internal:8080/api/graphql}
+      DATAHUB_FRONTEND_URL: ${DATAHUB_FRONTEND_URL:-http://localhost:9002}
+      DATAHUB_MCP_URL: ${DATAHUB_MCP_URL:-http://datahub-mcp:8000/mcp}
+      BUSINESS_MCP_URL: http://business-mcp:8010/mcp
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      AEGIS_OPENAI_MODEL: ${AEGIS_OPENAI_MODEL:-gpt-5.6-terra}
+      AEGIS_OPENAI_REASONING_EFFORT: ${AEGIS_OPENAI_REASONING_EFFORT:-low}
+      AEGIS_CAPABILITY_SIGNING_SECRET: ${AEGIS_CAPABILITY_SIGNING_SECRET:-dev-only-change-me}
+      AEGIS_DATAHUB_ACTIONS_SHARED_SECRET: ${AEGIS_DATAHUB_ACTIONS_SHARED_SECRET:-dev-actions-change-me}
+    volumes:
+      - aegis-state:/app/var
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    depends_on:
+      - business-mcp
+
+  business-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["python", "-m", "aegis_mcp.server"]
+    environment:
+      AEGIS_CONTEXT_DATABASE_PATH: /app/var/aegis-context.db
+      AEGIS_CAPABILITY_SIGNING_SECRET: ${AEGIS_CAPABILITY_SIGNING_SECRET:-dev-only-change-me}
+      FASTMCP_HOST: 0.0.0.0
+      FASTMCP_PORT: 8010
+    volumes:
+      - aegis-state:/app/var
+    ports:
+      - "8010:8010"
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+
+  datahub-mcp:
+    profiles: ["online"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["mcp-server-datahub", "--transport", "http"]
+    environment:
+      DATAHUB_GMS_URL: ${DATAHUB_GMS_URL:-http://host.docker.internal:8080}
+      DATAHUB_GMS_TOKEN: ${DATAHUB_GMS_TOKEN:-}
+      FASTMCP_HOST: 0.0.0.0
+      FASTMCP_PORT: 8000
+      TOOLS_IS_MUTATION_ENABLED: "false"
+    ports:
+      # Keep host 8081 free for DataHub quickstart's Schema Registry.
+      - "8082:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+
+  datahub-actions:
+    profiles: ["online"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - datahub-actions
+      - actions
+      - run
+      - -c
+      - /app/infra/datahub/actions/aegis-context-events.yaml
+    environment:
+      KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER:-broker:29092}
+      SCHEMA_REGISTRY_URL: ${SCHEMA_REGISTRY_URL:-http://datahub-gms:8080/schema-registry/api/}
+      AEGIS_EVENT_ENDPOINT: http://aegis:8000/api/integrations/datahub/events
+      AEGIS_DATAHUB_ACTIONS_SHARED_SECRET: ${AEGIS_DATAHUB_ACTIONS_SHARED_SECRET:-dev-actions-change-me}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - aegis
+    networks:
+      - default
+      - datahub-core
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+
+volumes:
+  aegis-state:
+
+networks:
+  datahub-core:
+    external: true
+    name: ${DATAHUB_DOCKER_NETWORK:-datahub_network}

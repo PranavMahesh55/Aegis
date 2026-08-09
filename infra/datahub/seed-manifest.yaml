@@ -1,0 +1,20 @@
+seed_version: aegis-demo-v1
+environment: PROD
+owner_urn: urn:li:corpGroup:commerce-ai-platform
+entities:
+  approved_policy: urn:li:dataset:(urn:li:dataPlatform:aegis_context,policies/refund-policy-v12.md,PROD)
+  draft_policy: urn:li:dataset:(urn:li:dataPlatform:aegis_context,policies/refund-policy-q4-draft.md,PROD)
+  refund_rag: urn:li:dataset:(urn:li:dataPlatform:pinecone,refund-rag-index,PROD)
+  refund_agent: urn:li:aiAgent:refund-resolution-agent-v2_8_4
+  refund_tool: urn:li:api:refund-service.issue_refund
+relationships:
+  - upstream: approved_policy
+    downstream: refund_rag
+    type: dataset_lineage
+  - upstream: refund_rag
+    downstream: refund_agent
+    type: agent_consumes_dataset
+  - upstream: refund_agent
+    downstream: refund_tool
+    type: agent_uses_tool
+

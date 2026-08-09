@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aegis-api"
+version = "0.1.0"
+description = "Context-safety control plane for production AI agents"
+requires-python = ">=3.12,<3.15"
+dependencies = [
+  "fastapi==0.115.6",
+  "httpx==0.28.1",
+  "pydantic-settings==2.7.0",
+  "uvicorn[standard]==0.41.0",
+]
+
+[project.optional-dependencies]
+datahub = [
+  "acryl-datahub==1.7.0",
+]
+runtime = [
+  "acryl-datahub==1.7.0",
+  "acryl-datahub-actions==1.7.0",
+  "langgraph==1.2.10",
+  "langchain-mcp-adapters==0.3.2",
+  "mcp==1.29.0",
+  "mcp-server-datahub==0.6.0",
+  "openai==2.53.0",
+]
+dev = [
+  "pytest==8.3.4",
+  "pytest-cov==6.0.0",
+  "ruff==0.8.4",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aegis*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+markers = ["datahub: requires a live DataHub deployment"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
