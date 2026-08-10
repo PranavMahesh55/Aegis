@@ -1,0 +1,10 @@
+.git/
+.vercel/
+.venv/
+.env
+.env.*
+**/node_modules/
+apps/web/dist/
+public/
+var/
+*.mov
