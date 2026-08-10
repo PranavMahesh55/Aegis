@@ -67,8 +67,13 @@ export function AppShell() {
         </nav>
         <div className="connection" aria-live="polite">
           <StatusGlyph tone={connectionTone} />
-          <span>{connected ? "DataHub connected" : connection.replaceAll("_", " ").toLowerCase()}</span>
-          <code>{status.data?.dataMode ?? "checking"}</code>
+          <span>
+            {connected
+              ? "DataHub connected"
+              : connection === "SEEDED_OFFLINE"
+                ? "Showcase ready"
+                : connection.replaceAll("_", " ").toLowerCase()}
+          </span>
         </div>
         <div className="context-line">
           <span>{selected?.name ?? "Production agent fleet"}</span>
@@ -77,12 +82,6 @@ export function AppShell() {
           {selected && <TrustBadge tone={selected.trustState} />}
         </div>
       </header>
-      {status.data && !connected && (
-        <div className={`mode-banner ${connection === "DEGRADED" ? "danger" : ""}`} role="status">
-          <strong>{status.data.dataMode.replaceAll("_", " ")}</strong>
-          <span>{status.data.datahub.detail}</span>
-        </div>
-      )}
       <main id="main-content">
         <Outlet />
       </main>

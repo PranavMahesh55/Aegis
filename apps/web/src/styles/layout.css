@@ -7,8 +7,7 @@
 }
 
 .topbar,
-.view,
-.mode-banner {
+.view {
   width: min(var(--canvas), 100%);
   margin-inline: auto;
 }
@@ -94,24 +93,6 @@
   grid-column: 1 / -1;
   padding-top: 8px;
   border-top: 1px solid var(--line);
-}
-
-.mode-banner {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  margin-top: 8px;
-  padding: 8px 14px;
-  border: 1px solid var(--warning);
-  color: #70480f;
-  background: var(--warning-soft);
-  font-size: 12px;
-}
-
-.mode-banner.danger {
-  border-color: var(--accent);
-  color: #76251e;
-  background: var(--accent-soft);
 }
 
 .view {
@@ -1334,15 +1315,9 @@
     font-size: 39px;
   }
 
-  .mode-banner,
   .operator-note,
   .attestation {
     grid-template-columns: 1fr;
-  }
-
-  .mode-banner {
-    align-items: flex-start;
-    flex-direction: column;
   }
 
   .operator-note button {

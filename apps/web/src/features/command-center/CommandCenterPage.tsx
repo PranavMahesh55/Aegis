@@ -57,7 +57,6 @@ export function CommandCenterPage() {
       <div className="fleet-meta">
         <span>{items.length} production pipelines</span>
         <span>As of {new Date(pipelines.data!.asOf).toLocaleTimeString()}</span>
-        <strong>{pipelines.data!.dataMode.replaceAll("_", " ")}</strong>
       </div>
       <div className="pipeline-lanes" aria-label="Production agent pipelines">
         {items.map((pipeline) => (
