@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm --prefix apps/web run build -- --outDir ../../public --emptyOutDir",
+  "installCommand": "npm --prefix apps/web ci",
+  "framework": "vite",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
+    { "source": "/pipelines", "destination": "/index.html" },
+    { "source": "/pipelines/(.*)", "destination": "/index.html" },
+    { "source": "/incidents", "destination": "/index.html" },
+    { "source": "/incidents/(.*)", "destination": "/index.html" },
+    { "source": "/controls", "destination": "/index.html" },
+    { "source": "/controls/(.*)", "destination": "/index.html" }
+  ]
+}
